@@ -20,3 +20,6 @@ foreach ($array as $item) {
 echo $tot."\n";
 
 
+// TODO -->> Input 2 elaboration
+
+
