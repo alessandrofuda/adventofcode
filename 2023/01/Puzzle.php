@@ -77,12 +77,7 @@ class Puzzle
         $numbs = ['one','two','three','four','five','six','seven','eight','nine'];
         foreach ( $numbs as $n) {
             $string = str_replace($n, $this->getFirstLetter($n).$n,$string);
-            // var_dump($string);
-
         }
-
-        // var_dump($string);
-        // die();
 
         return $string;
     }
