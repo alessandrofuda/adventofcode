@@ -19,7 +19,9 @@ class Puzzle
 
         foreach ($array as $item) {
 
+            $item = $this->normalizeNumbersWithOverlappedLetters($item); // ex: fivecgtwotwo3oneighth ==> must BE 58 (NOT 51 !!!!)
             $mixed_integers = $this->getArrayViaRegex($item);
+
             $integers = $this->remapAllToIntegers($mixed_integers);
 
             if(!empty($integers)) {
@@ -67,5 +69,26 @@ class Puzzle
         $first_int = $integers[0];
         $last_int = $integers[count($integers)-1];
         return (integer) $first_int.$last_int;
+    }
+
+    private function normalizeNumbersWithOverlappedLetters(string $string) : string
+    {
+        // var_dump($string);  // fivecgtwotwo3oneighth
+        $numbs = ['one','two','three','four','five','six','seven','eight','nine'];
+        foreach ( $numbs as $n) {
+            $string = str_replace($n, $this->getFirstLetter($n).$n,$string);
+            // var_dump($string);
+
+        }
+
+        // var_dump($string);
+        // die();
+
+        return $string;
+    }
+
+    private function getFirstLetter(string $string) : string
+    {
+        return substr($string, 0, 1);
     }
 }
