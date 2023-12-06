@@ -2,13 +2,41 @@
 
 class Puzzle
 {
-    public function convertInputToArr(string $file) : array
+    protected string $file;
+    protected string $regex;
+
+    public function __construct($file, $regex)
     {
-        $input = file_get_contents($file, true);
+        $this->file = $file;
+        $this->regex = $regex;
+    }
+
+    public function run() : int
+    {
+        $array = $this->convertInputToArr();
+
+        $tot = 0;
+
+        foreach ($array as $item) {
+
+            $mixed_integers = $this->getArrayViaRegex($item);
+            $integers = $this->remapAllToIntegers($mixed_integers);
+
+            if(!empty($integers)) {
+                $tot += $this->calcSubTot($integers);
+            }
+        }
+
+        return $tot;
+    }
+
+    private function convertInputToArr() : array
+    {
+        $input = file_get_contents($this->file, true);
         return array_filter(explode("\n", $input));
     }
 
-    public function remapAllToIntegers(array $mixed_integers) : array
+    private function remapAllToIntegers(array $mixed_integers) : array
     {
         return array_map(function($item) {
             $value = match($item) {
@@ -28,13 +56,13 @@ class Puzzle
         }, $mixed_integers);
     }
 
-    public function getArrayViaRegex(string $pattern, $string) : array
+    private function getArrayViaRegex(string $string) : array
     {
-        preg_match_all($pattern, $string, $matches);
+        preg_match_all($this->regex, $string, $matches);
         return $matches[0];
     }
 
-    public function calcSubTot(array $integers) : int
+    private function calcSubTot(array $integers) : int
     {
         $first_int = $integers[0];
         $last_int = $integers[count($integers)-1];

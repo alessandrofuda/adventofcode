@@ -2,22 +2,9 @@
 
 require_once "Puzzle.php";
 
-$puzzle = new Puzzle();
+$puzzle = new Puzzle('input2.txt', '/[0-9]|one|two|three|four|five|six|seven|eight|nine/');
+$result = $puzzle->run();
 
-$array = $puzzle->convertInputToArr('input2.txt');
-
-$tot = 0;
-
-foreach ($array as $item) {
-
-    $mixed_integers = $puzzle->getArrayViaRegex('/[0-9]|one|two|three|four|five|six|seven|eight|nine/', $item);
-    $integers = $puzzle->remapAllToIntegers($mixed_integers);
-
-    if(!empty($integers)) {
-        $tot += $puzzle->calcSubTot($integers);
-    }
-}
-
-echo $tot."\n";
+echo $result."\n";
 
 
