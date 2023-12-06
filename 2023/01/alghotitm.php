@@ -1,6 +1,6 @@
 <?php
 
-$input = file_get_contents('./input2.txt');
+$input = file_get_contents('input.txt', true);
 $array = array_filter(explode("\n", $input));
 
 $tot = 0;
