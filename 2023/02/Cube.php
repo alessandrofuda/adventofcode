@@ -2,6 +2,11 @@
 
 class Cube
 {
+    const THRESHOLDS = [
+        'red' => 12,
+        'green' => 13,
+        'blue' => 14,
+    ];
     protected string $file;
 
     public function __construct($file)
@@ -12,9 +17,10 @@ class Cube
     public function run() : int
     {
         $games = $this->convertInputToArr();
+
         $validated_games = [];
 
-        foreach ($games as $game) {
+        foreach ($games as $k => $game) {
             $sets = $this->getSets($game);
 
             $break = false;
@@ -27,17 +33,54 @@ class Cube
             }
 
             if(!$break) {
-                $validated_games[] = $this->getGameId($game);
+                $validated_games[] = $k+1;
             }
         }
 
-        $tot = $this->sumAllItemsOfArray($validated_games);
-        return $tot;
+        return array_sum($validated_games);
 
     }
 
-    private function getGameId(mixed $game) : int
+    private function convertInputToArr() : array
     {
-        // return $id;
+        $input = file_get_contents($this->file, true);
+        return array_filter(explode("\n", $input));
     }
+
+    private function getSets(string $game) : array
+    {
+        $game = explode(':', $game);
+        $sets = trim($game[1]);
+        return explode('; ', $sets);
+    }
+
+
+    private function passingChecks(string $set) : bool
+    {
+        $set = $this->convertSetToAssArray($set);
+
+        if(
+            (array_key_exists('blue', $set) && ($set['blue'] > self::THRESHOLDS['blue']))
+            || (array_key_exists('green', $set) && ($set['green'] > self::THRESHOLDS['green']))
+            || (array_key_exists('red', $set) && ($set['red'] > self::THRESHOLDS['red']))
+        )
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private function convertSetToAssArray(string $set) : array
+    {
+        $n_cols = explode(', ', $set);
+        $assoc = [];
+
+        foreach ($n_cols as $n_col) {
+            $arr = explode(' ', $n_col);
+            $assoc[$arr[1]] = (int) $arr[0];
+        }
+
+        return $assoc;
+    }
+
 }

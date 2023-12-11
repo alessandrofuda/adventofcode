@@ -18,10 +18,12 @@
 
 require_once "Cube.php";
 
-$cube = new Cube('input_test.txt');
+// part one
+$cube = new Cube('input.txt');
 $result = $cube->run();
 
 echo $result."\n";
 
+// part two
 // todo ..tbc..
 
