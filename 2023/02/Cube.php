@@ -7,23 +7,23 @@ class Cube
         'green' => 13,
         'blue' => 14,
     ];
-    protected string $file;
-    protected array $games;
+    private string $file;
+    private array $games;
+    private array $colors;
 
     public function __construct($file)
     {
         $this->file = $file;
+        $this->games = $this->convertInputToArr();
+        $this->colors = array_keys(self::THRESHOLDS);
     }
 
     public function run() : int
     {
-        $this->games = $this->convertInputToArr();
-
         $validated_games = [];
 
         foreach ($this->games as $k => $game) {
             $sets = $this->getSets($game);
-
             $break = false;
 
             foreach ($sets as $set) {
@@ -32,14 +32,11 @@ class Cube
                     break;
                 }
             }
-
             if(!$break) {
                 $validated_games[] = $k+1;
             }
         }
-
         return array_sum($validated_games);
-
     }
 
     private function convertInputToArr() : array
@@ -84,9 +81,7 @@ class Cube
     }
 
 
-
     // ----------------------------------------------------------
-
 
 
     public function run2() : int
@@ -95,22 +90,18 @@ class Cube
         foreach ($this->games as $game) {
             $sets = $this->getSets($game);
 
-            $colors = array_keys(self::THRESHOLDS);
-
             $max_values = [];
-            foreach ($colors as $color) {
-                $max = $this->getMaxPerColorBetweenSets($color, $sets);
+            foreach ($this->colors as $color) {
+                $max = $this->getMaxValuePerColorBetweenSets($color, $sets);
                 $max_values[] = $max;
             }
             $product = array_product($max_values);
             $products[] = $product;
         }
-
         return array_sum($products);
-
     }
 
-    private function getMaxPerColorBetweenSets(string $color, array $sets) : int
+    private function getMaxValuePerColorBetweenSets(string $color, array $sets) : int
     {
         $assoc_arr = $this->convertSetsToArray($sets);
 
@@ -129,5 +120,4 @@ class Cube
         }
         return $assoc_arr;
     }
-
 }
