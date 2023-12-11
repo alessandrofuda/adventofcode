@@ -8,6 +8,7 @@ class Cube
         'blue' => 14,
     ];
     protected string $file;
+    protected array $games;
 
     public function __construct($file)
     {
@@ -16,11 +17,11 @@ class Cube
 
     public function run() : int
     {
-        $games = $this->convertInputToArr();
+        $this->games = $this->convertInputToArr();
 
         $validated_games = [];
 
-        foreach ($games as $k => $game) {
+        foreach ($this->games as $k => $game) {
             $sets = $this->getSets($game);
 
             $break = false;
@@ -54,7 +55,6 @@ class Cube
         return explode('; ', $sets);
     }
 
-
     private function passingChecks(string $set) : bool
     {
         $set = $this->convertSetToAssArray($set);
@@ -81,6 +81,53 @@ class Cube
         }
 
         return $assoc;
+    }
+
+
+
+    // ----------------------------------------------------------
+
+
+
+    public function run2() : int
+    {
+        $products = [];
+        foreach ($this->games as $game) {
+            $sets = $this->getSets($game);
+
+            $colors = array_keys(self::THRESHOLDS);
+
+            $max_values = [];
+            foreach ($colors as $color) {
+                $max = $this->getMaxPerColorBetweenSets($color, $sets);
+                $max_values[] = $max;
+            }
+            $product = array_product($max_values);
+            $products[] = $product;
+        }
+
+        return array_sum($products);
+
+    }
+
+    private function getMaxPerColorBetweenSets(string $color, array $sets) : int
+    {
+        $assoc_arr = $this->convertSetsToArray($sets);
+
+        $sets_per_color = array_map(function($item) use ($color){
+            return $item[$color] ?? null;
+        }, $assoc_arr);
+
+        return max($sets_per_color);
+    }
+
+    private function convertSetsToArray(array $sets) : array
+    {
+        $assoc_arr = [];
+        foreach ($sets as $set) {
+            $assoc_arr[] = $this->convertSetToAssArray($set);
+        }
+        return $assoc_arr;
     }
 
 }
