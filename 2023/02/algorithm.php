@@ -15,7 +15,7 @@
 // NOT passing the test Games 3 and 4
 
 require_once "Cube.php";
-$cube = new Cube('input_test.txt');
+$cube = new Cube('input.txt');
 
 // part one
 echo 'Result 1st part: '. $cube->run()."\n";
