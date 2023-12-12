@@ -9,7 +9,7 @@
 
 
 require_once "Gear.php";
-$gear = new Gear('input_test2.txt');
+$gear = new Gear('input.txt');
 echo 'Result: '.$gear->run()."\n";
 
 
@@ -19,6 +19,7 @@ echo 'Result: '.$gear->run()."\n";
 // 557560 [with regex WRONG!]  ,,
 // 558477 (with !is_numeric($character) --> wrong, too high)
 // 435463 [WRONG]
+// 557705 [OK !!]
 
 
 

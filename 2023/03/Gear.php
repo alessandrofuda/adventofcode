@@ -17,10 +17,13 @@ class Gear
         foreach ($rows as $key => $row) {
 
             $numbers = $this->getNumbersInCurrentRow($row);
+            $offset = 0;
 
             foreach ($numbers as $number) {
                 try {
-                    $positions = $this->getNumberPositions($number, $row); // ex 4,5,6
+
+                    $positions = $this->getNumberPositions($number, $row, $offset); // ex 4,5,6
+                    $offset = end($positions)+1;
 
                     $this->searchSymbolInLine($row, $positions, $number);
 
@@ -53,15 +56,17 @@ class Gear
         return $matches[0];
     }
 
-    function getNumberPositions($number,$row) : array // error IF: ..24..4.. (find 4 in this row..)
+    function getNumberPositions($number,$row, $offset) : array // error IF: ..24..4.. (find 4 in this row..)
     {
-        // $first_pos=strpos($row,$number); // BUG !!!
-        $res=preg_match_all("/[^\d]$number.*[^\d]/", $row, $matches, PREG_OFFSET_CAPTURE);  // BUG ..24..24*..
+        var_dump('Offset: '.$offset);
+        $first_pos=strpos($row,$number, $offset); // BUG !!! todo add offsett!!!
+        //$res=preg_match_all("/[^\d]?$number.*[^\d]?/", $row, $matches, PREG_OFFSET_CAPTURE);  // BUG ..24..24*..
 
-        var_dump($res);
-        var_dump($matches[0]);
+        var_dump('Number: '.$number);
+        var_dump('First pos: '.$first_pos);
+        //var_dump($matches);
         // die();
-        $first_pos = $matches[0][1];
+        //$first_pos = $matches[0][1]+1;
 
         $length=strlen((string) $number);
         $positions=[$first_pos];
