@@ -19,23 +19,22 @@ class Gear
             $numbers = $this->getNumbersInCurrentRow($row);
 
             foreach ($numbers as $number) {
-
                 try {
                     $positions = $this->getNumberPositions($number, $row); // ex 4,5,6
 
-                    $this->searchSymbolInLine($row, $positions);
+                    $this->searchSymbolInLine($row, $positions, $number);
 
                     if ($key > 0) {
-                        $this->searchSymbolInLine($rows[$key - 1], $positions);
+                        $this->searchSymbolInLine($rows[$key - 1], $positions, $number);
                     }
 
                     if ($key < (count($rows) - 1)) {
-                        $this->searchSymbolInLine($rows[$key + 1], $positions);
+                        $this->searchSymbolInLine($rows[$key + 1], $positions, $number);
                     }
 
                 } catch (Exception $e) {
                     echo $e->getMessage();
-                    $validated[] = (integer)$number;
+                    $validated[] = (integer) $number;
                 }
             }
         }
@@ -50,14 +49,20 @@ class Gear
 
     function getNumbersInCurrentRow($row) : array
     {
-        $pattern='/\d+/';
-        preg_match_all($pattern, $row, $matches);
+        preg_match_all('/\d+/', $row, $matches);
         return $matches[0];
     }
 
-    function getNumberPositions($number,$row) : array
+    function getNumberPositions($number,$row) : array // error IF: ..24..4.. (find 4 in this row..)
     {
-        $first_pos=strpos($row,$number);
+        // $first_pos=strpos($row,$number); // BUG !!!
+        $res=preg_match_all("/[^\d]$number.*[^\d]/", $row, $matches, PREG_OFFSET_CAPTURE);  // BUG ..24..24*..
+
+        var_dump($res);
+        var_dump($matches[0]);
+        // die();
+        $first_pos = $matches[0][1];
+
         $length=strlen((string) $number);
         $positions=[$first_pos];
 
@@ -72,7 +77,7 @@ class Gear
     /**
      * @throws Exception
      */
-    function searchSymbolInLine($row, $positions) : void
+    function searchSymbolInLine($row, $positions, $number) : void
     {
         if($positions[0]>0){
             array_unshift($positions,$positions[0]-1);
@@ -85,11 +90,12 @@ class Gear
         foreach ($positions as $position){
 
             $character = substr($row,$position,1);
-            $pattern='/[^\d.]/';
-            $found=(bool) preg_match($pattern,$character);
-
+            $found=(bool) preg_match('/[^\d.]/',$character,$matches);
+            // $found=(!is_numeric($character)) && $character != '.';
+            // var_dump($found);
             if($found){
-                throw new Exception("symbol found!\n");
+                throw new Exception("---adjacent symbol found!---:  - Included number: $number\n"); // $matches[0]
+                // throw new Exception();
             }
         }
     }
