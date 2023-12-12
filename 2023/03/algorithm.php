@@ -13,13 +13,8 @@ $gear = new Gear('input.txt');
 echo 'Result: '.$gear->run()."\n";
 
 
-// special characters in TEST: *#+$   --> Result: 4361 [OK]
-// special characters in PROD: *#+$   /=&%@-  -->
-// Result: ???
-// 557560 [with regex WRONG!]  ,,
-// 558477 (with !is_numeric($character) --> wrong, too high)
-// 435463 [WRONG]
-// 557705 [OK !!]
+// TEST Result: 4361
+// PROD Result: 557705
 
 
 

@@ -58,15 +58,7 @@ class Gear
 
     function getNumberPositions($number,$row, $offset) : array // error IF: ..24..4.. (find 4 in this row..)
     {
-        var_dump('Offset: '.$offset);
-        $first_pos=strpos($row,$number, $offset); // BUG !!! todo add offsett!!!
-        //$res=preg_match_all("/[^\d]?$number.*[^\d]?/", $row, $matches, PREG_OFFSET_CAPTURE);  // BUG ..24..24*..
-
-        var_dump('Number: '.$number);
-        var_dump('First pos: '.$first_pos);
-        //var_dump($matches);
-        // die();
-        //$first_pos = $matches[0][1]+1;
+        $first_pos=strpos($row,$number, $offset); // !!! IMP: add offset to avoid BUG !!!
 
         $length=strlen((string) $number);
         $positions=[$first_pos];
@@ -77,7 +69,6 @@ class Gear
 
         return $positions;
     }
-
 
     /**
      * @throws Exception
@@ -96,11 +87,9 @@ class Gear
 
             $character = substr($row,$position,1);
             $found=(bool) preg_match('/[^\d.]/',$character,$matches);
-            // $found=(!is_numeric($character)) && $character != '.';
-            // var_dump($found);
+
             if($found){
                 throw new Exception("---adjacent symbol found!---:  - Included number: $number\n"); // $matches[0]
-                // throw new Exception();
             }
         }
     }
