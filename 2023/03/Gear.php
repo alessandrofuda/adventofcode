@@ -109,47 +109,33 @@ class Gear
         foreach ($rows as $key => $row) {
 
             $asterisk_positions = $this->getAsterisksPositInCurrentRow($row);
-            $adj_numbers_in_current_line = [];
-            $adj_numbers_in_previous_line = [];
-            $adj_numbers_in_next_line = [];
+            $adjacent_numbers = [];
 
             foreach ($asterisk_positions as $asterisk_position) {
 
-                $adj_numbers_in_current_line[] = $this->searchAdjNumbersInLine($row, $asterisk_position, true);
+                $adjacent_numbers[] = $this->searchAdjNumbersInLine($key, $row, $asterisk_position, true);
 
                 if ($key > 0) {
-                    $adj_numbers_in_previous_line[] = $this->searchAdjNumbersInLine($rows[$key - 1], $asterisk_position, false);
+                    $adjacent_numbers[] = $this->searchAdjNumbersInLine($key, $rows[$key-1], $asterisk_position, false);
                 }
 
-            if ($key < (count($rows) - 1)) {
-                    $adj_numbers_in_next_line[] = $this->searchAdjNumbersInLine($rows[$key + 1], $asterisk_position, false);
+                if ($key < (count($rows) - 1)) {
+                    $adjacent_numbers[] = $this->searchAdjNumbersInLine($key, $rows[$key+1], $asterisk_position, false);
                 }
-
             }
 
-            $adj_numbers_in_current_line = $this->remapFilterArr($adj_numbers_in_current_line);
-            $adj_numbers_in_previous_line = $this->remapFilterArr($adj_numbers_in_previous_line);
-            $adj_numbers_in_next_line = $this->remapFilterArr($adj_numbers_in_next_line);
 
-            var_dump($adj_numbers_in_current_line);
-            var_dump($adj_numbers_in_next_line);
-
+            $adjacent_numbers = $this->remapFilterArr($adjacent_numbers);
+            print_r($adjacent_numbers);
+            $grouped = $this->groupArrayByKeys(['line','asterisc_position'], 'adjacent_number'); // todo  .....
+            // var_dump($this->remapFilterArr($adjacent_numbers));
             die(); // end-first-row
 
         }
 
-        // die(); // end all rows
-
-
         return array_sum($products);
     }
 
-
-//    private function getAdjAsterisksNumbers() : array
-//    {
-//        $asterisks_numbers = array_filter(array_map(fn($item) => ($item['symbol'] == '*') ? $item['number'] : null, $this->validated));
-//        return array_values($asterisks_numbers); // re-index arr
-//    }
     private function getAsterisksPositInCurrentRow(mixed $row) : array
     {
         preg_match_all('/\*/', $row, $matches, PREG_OFFSET_CAPTURE);
@@ -157,15 +143,22 @@ class Gear
         return array_map(fn($item) => $item[1], $matches);
     }
 
-    private function searchAdjNumbersInLine(string $row, int $position, bool $is_current_line = false) : array
+    private function searchAdjNumbersInLine(int $row_index, string $row, int $position, bool $is_current_line = false) : array
     {
         preg_match_all('/\d+/', $row, $matches, PREG_OFFSET_CAPTURE);
         $numbers = $matches[0];
         $adjacent_numbers = [];
 
         foreach ($numbers as $number) {
+//            print_r('row: '. $row."\n");
+//            print_r('asterisc position: '.$position."\n");
+//            print_r('number: '.$number[0]."\n");
+//            print_r('number position: '.$number[1]."\n");
+//            var_dump($this->numberIsAdjacent($position, $number, $is_current_line));
+//            print_r('----------------'."\n");
+
             if($this->numberIsAdjacent($position, $number, $is_current_line)){
-                $adjacent_numbers[] = $number[0];
+                $adjacent_numbers[] = ['line' => $row_index, 'asterisc_position' => $position, 'adjacent_number' => $number[0]];
             }
         }
 
@@ -174,14 +167,15 @@ class Gear
 
     private function numberIsAdjacent(int $asterisk_position, array $number, bool $is_current_line) : bool  // number: [(string)number, (int)position]
     {
-        $n = $number[0]; // string
-        $n_start_pos = $number[1]; // int
+        $n = $number[0]; // string  // 25
+        $n_start_pos = $number[1]; // int  // 2
         $n_lenght = strlen($n);
         $n_positions = [$n_start_pos];
 
         for ($i=1;$i<$n_lenght; $i++){
-            $n_positions[] = $n_start_pos + $i;
+            $n_positions[] = $n_start_pos + $i;   // [2,3]
         }
+
         if($is_current_line) {
             return (in_array($asterisk_position+1, $n_positions) || in_array($asterisk_position-1, $n_positions));
         }else{

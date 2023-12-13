@@ -11,8 +11,8 @@
 require_once "Gear.php";
 $gear = new Gear('input_test2.txt');
 
-// 1st part
-echo 'Result 1: '.$gear->run()."\n";
+//// 1st part
+//echo 'Result 1: '.$gear->run()."\n";
 
 // TEST Result: 4361
 // PROD Result: 557705
