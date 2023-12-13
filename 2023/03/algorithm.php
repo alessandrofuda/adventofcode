@@ -9,15 +9,18 @@
 
 
 require_once "Gear.php";
-$gear = new Gear('input.txt');
-echo 'Result: '.$gear->run()."\n";
+$gear = new Gear('input_test2.txt');
 
+// 1st part
+echo 'Result 1: '.$gear->run()."\n";
 
 // TEST Result: 4361
 // PROD Result: 557705
 
-
-
+// 2nd part
+echo 'Result 2: '.$gear->run2()."\n";
+// TEST Result:
+// PROD Result:
 
 
 
