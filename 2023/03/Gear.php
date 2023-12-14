@@ -3,7 +3,6 @@
 class Gear
 {
     private string $file;
-    private array $validated;
 
     public function __construct($file)
     {
@@ -37,16 +36,11 @@ class Gear
                     }
 
                 } catch (Exception $e) {
-                    // echo json_decode($e->getMessage(), true)['msg']."\n";
-                    echo $e->getMessage()."\n";
-                    // $validated[] = ['number' => (integer) $number, 'symbol' => json_decode($e->getMessage(), true)['symbol']];
+                    // echo $e->getMessage()."\n";
                     $validated[] = (integer) $number;
                 }
             }
         }
-
-        // $this->validated = $validated;
-        // $validated_numbers = array_map(fn($item) => $item['number'], $validated);
 
         return array_sum($validated);
     }
@@ -96,7 +90,6 @@ class Gear
             $found=(bool) preg_match('/[^\d.]/',$character,$matches);
 
             if($found){
-                // throw new Exception(json_encode(['msg' => "adjacent symbol found: $matches[0] - Include number: $number", 'symbol' => $matches[0]]));
                 throw new Exception("adjacent symbol found: $matches[0] - Include number: $number");
             }
         }
@@ -126,18 +119,10 @@ class Gear
             }
 
             $adjacent_numbers = $this->remapFilterArr($adjacent_numbers);
-            // print_r('Not grouped: ');
-            // print_r($adjacent_numbers);
-            $grouped = $this->groupArrayByKeys(['line','asterisc_position'], $adjacent_numbers);
-            // print_r('Grouped:');
-            // print_r($grouped);
+            $grouped = $this->groupArrayByLinesAndPositions($adjacent_numbers);
             $sums_per_line[] = $this->multiplyAdjacentNumbersIfArePairsAndSumIt($grouped);
-            // var_dump($sums_per_line);
-            // die('stopp'); // end-first-row
 
         }
-        // die('stop');
-        var_dump($sums_per_line);
         return array_sum($sums_per_line);
     }
 
@@ -155,13 +140,6 @@ class Gear
         $adjacent_numbers = [];
 
         foreach ($numbers as $number) {
-//            print_r('row: '. $row."\n");
-//            print_r('asterisc position: '.$position."\n");
-//            print_r('number: '.$number[0]."\n");
-//            print_r('number position: '.$number[1]."\n");
-//            var_dump($this->numberIsAdjacent($position, $number, $is_current_line));
-//            print_r('----------------'."\n");
-
             if($this->numberIsAdjacent($position, $number, $is_current_line)){
                 $adjacent_numbers[] = ['line' => $row_index, 'asterisc_position' => $position, 'adjacent_number' => $number[0]];
             }
@@ -170,7 +148,7 @@ class Gear
         return $adjacent_numbers;
     }
 
-    private function numberIsAdjacent(int $asterisk_position, array $number, bool $is_current_line) : bool  // number: [(string)number, (int)position]
+    private function numberIsAdjacent(int $asterisk_position, array $number, bool $is_current_line) : bool
     {
         $n = $number[0]; // string  // 25
         $n_start_pos = $number[1]; // int  // 2
@@ -191,10 +169,17 @@ class Gear
     private function remapFilterArr(array $adj_numbers_in_current_line) : array
     {
         $adj_numbers_in_current_line = array_values(array_filter($adj_numbers_in_current_line));
-        return array_map(fn($item) => $item[0], $adj_numbers_in_current_line);
+
+        $return = [];
+        foreach ( $adj_numbers_in_current_line as $items) {
+            foreach ($items as $item) {
+                $return[] = $item;
+            }
+        }
+        return $return;
     }
 
-    private function groupArrayByKeys(array $keys, array $adjacent_numbers) : array
+    private function groupArrayByLinesAndPositions(array $adjacent_numbers) : array
     {
         $grouped = [];
         $lines = $this->getDistinctValuesOfLineAttr($adjacent_numbers);
@@ -254,7 +239,6 @@ class Gear
             return (int) $item;
         }, $adjacent_numbers);
     }
-
 }
 
 

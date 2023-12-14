@@ -6,26 +6,16 @@
 // in $previous_line search symbol in $position-1, $position, $position+1
 // IF found it populate an array with the $current_number and break loop cycle.
 
-
-
 require_once "Gear.php";
-$gear = new Gear('input_test2.txt');
+$gear = new Gear('input.txt');
 
-//// 1st part
-//echo 'Result 1: '.$gear->run()."\n";
-
+// 1st part
+echo 'Result 1: '.$gear->run()."\n";
 // TEST Result: 4361
 // PROD Result: 557705
 
 // 2nd part
 echo 'Result 2: '.$gear->run2()."\n";
-// TEST Result:
-// PROD Result:
-
-
-
-
-
-
-
+// TEST Result: 467835
+// PROD Result: 84266818
 
