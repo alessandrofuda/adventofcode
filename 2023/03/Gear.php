@@ -105,6 +105,7 @@ class Gear
     public function run2() : int
     {
         $rows = $this->convertInputToArr();
+        $sums_per_line = [];
 
         foreach ($rows as $key => $row) {
 
@@ -124,16 +125,20 @@ class Gear
                 }
             }
 
-
             $adjacent_numbers = $this->remapFilterArr($adjacent_numbers);
-            print_r($adjacent_numbers);
-            $grouped = $this->groupArrayByKeys(['line','asterisc_position'], 'adjacent_number'); // todo  .....
-            // var_dump($this->remapFilterArr($adjacent_numbers));
-            die(); // end-first-row
+            // print_r('Not grouped: ');
+            // print_r($adjacent_numbers);
+            $grouped = $this->groupArrayByKeys(['line','asterisc_position'], $adjacent_numbers);
+            // print_r('Grouped:');
+            // print_r($grouped);
+            $sums_per_line[] = $this->multiplyAdjacentNumbersIfArePairsAndSumIt($grouped);
+            // var_dump($sums_per_line);
+            // die('stopp'); // end-first-row
 
         }
-
-        return array_sum($products);
+        // die('stop');
+        var_dump($sums_per_line);
+        return array_sum($sums_per_line);
     }
 
     private function getAsterisksPositInCurrentRow(mixed $row) : array
@@ -189,6 +194,66 @@ class Gear
         return array_map(fn($item) => $item[0], $adj_numbers_in_current_line);
     }
 
+    private function groupArrayByKeys(array $keys, array $adjacent_numbers) : array
+    {
+        $grouped = [];
+        $lines = $this->getDistinctValuesOfLineAttr($adjacent_numbers);
+
+        foreach ($lines as $line) {
+            $positions = $this->getDistinctPairValuesLineAsteriscPosition($adjacent_numbers, $line); // [4,9];
+            foreach ($positions as $position) {
+                foreach ($adjacent_numbers as $item){
+
+                    if($item['line'] == $line && $item['asterisc_position'] == $position){
+                        $grouped['line-'.$line]['position-'.$position]['line'] = $line;
+                        $grouped['line-'.$line]['position-'.$position]['asterisc_position'] = $position;
+                        $grouped['line-'.$line]['position-'.$position]['adjacent_numbers'][] = $item['adjacent_number'];
+                    }
+                }
+            }
+        }
+        return $grouped;
+    }
+
+    private function getDistinctValuesOfLineAttr(array $adjacent_numbers) : array
+    {
+        $lines = array_map(function($item){
+            return $item['line'];
+        }, $adjacent_numbers);
+
+        return array_unique($lines);
+    }
+
+    private function getDistinctPairValuesLineAsteriscPosition(array $adjacent_numbers, mixed $line) : array
+    {
+        $positions = array_map(function($item) use ($line) {
+            if($item['line'] === $line) {
+                return $item['asterisc_position'];
+            }
+        }, $adjacent_numbers);
+
+        return array_unique($positions);
+    }
+
+    private function multiplyAdjacentNumbersIfArePairsAndSumIt(array $grouped) : int
+    {
+        $products = [];
+        foreach ($grouped as $items) {
+            foreach ($items as $item) {
+                if(count($item['adjacent_numbers']) > 1) {
+                    $products[] = array_product($this->convertToInt($item['adjacent_numbers']));
+                }
+            }
+        }
+        return array_sum($products);
+    }
+
+    private function convertToInt(array $adjacent_numbers) : array
+    {
+        return array_map(function($item){
+            return (int) $item;
+        }, $adjacent_numbers);
+    }
 
 }
 
