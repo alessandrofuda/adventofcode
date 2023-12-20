@@ -17,26 +17,29 @@
 class Scratchcards
 {
     private string $file;
+    private array $rows;
+    private string $input_compiled;
 
     public function __construct($file)
     {
         $this->file = $file;
+        $this->rows = $this->convertInputToArr();
+        $this->input_compiled = $this->createNewInputCompiledFile();
     }
 
-    public function run(): int
+    public function run() : int
     {
-        $rows = $this->convertInputToArr();
         $points = [];
 
-        foreach ($rows as $row) {
+        foreach ($this->rows as $row) {
             // $card = $this->getCardNumb($row);
             $winning_numbers = $this->getWinningNumbers($row);
             $my_numbers = $this->getMyNumbers($row);
 
-            $common_values = array_intersect($winning_numbers, $my_numbers);
+            $matching_values = array_intersect($winning_numbers, $my_numbers);
 
-            if(count($common_values) > 0) {
-                $exponent = count($common_values) - 1;
+            if(count($matching_values) > 0) {
+                $exponent = count($matching_values) - 1;
                 $points[] = pow(2, $exponent);
             }else{
                 $points[] = 0;
@@ -46,6 +49,41 @@ class Scratchcards
         return array_sum($points);
     }
 
+    /**
+     * @throws Exception
+     */
+    public function run2() : int
+    {
+        $matches_per_card = $this->getMatchesPerCards();
+        //var_dump($matches_per_card);
+
+
+        while ($i < 10) { // todo, next untill ?????
+            $input_compiled_rows = $this->getInputCompiledContent();
+            // foreach ($input_compiled_rows as $key => $row) {
+            $last_item = 0;
+            for($i=$last_item;$i<=count($input_compiled_rows);$i++) {
+                $card = $this->getCardNumb($input_compiled_rows[$i]);
+                $matches_count = $this->getMatchingNumberInCard($matches_per_card, $card);
+                $this->createCardCopies($matches_count, $card);
+
+            }
+            $i++;
+        }
+        // todo ooo
+
+        //var_dump($input_compiled_rows);
+        //die('aaaaaaaa'."\n");
+
+
+
+        var_dump($matches_per_card);
+
+        foreach ($this->rows as $row) {
+
+        }
+        die('ookk'."\n");
+    }
 
     private function convertInputToArr(): array
     {
@@ -53,10 +91,10 @@ class Scratchcards
         return array_filter(explode("\n", $input));
     }
 
-    private function getCardNumb(mixed $row) : string
+    private function getCardNumb(mixed $row) : int
     {
         preg_match('/Card [0-9]+/', $row, $matches);
-        return substr($matches[0], 5);
+        return (int) substr($matches[0], 5);
     }
 
     private function getWinningNumbers(string $row) : array
@@ -78,6 +116,69 @@ class Scratchcards
         return array_map(function($item){
             return (int) $item;
         }, $numbers);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function createNewInputCompiledFile() : string
+    {
+        $new_filename = 'input_compiled.txt';
+        copy($this->file, $new_filename) or die('Error in '.__METHOD__);
+
+        return $new_filename;
+    }
+
+    private function createCardCopies(int $matching_values_count, int $current_card_number)
+    {
+        $file = fopen($this->input_compiled, 'a') or die("Unable to open file!");
+        $cards_to_copy = $this->cardsToCopy($current_card_number, $matching_values_count);
+        foreach ($cards_to_copy as $card) {
+            fwrite($file, $this->rows[$card-1]."\n");
+        }
+        fclose($file);
+    }
+
+    private function cardsToCopy(int $current_card_number, int $matching_values_count) : array
+    {
+        $cards_to_copy = [];
+        for ($i=$current_card_number+1;$i<=($current_card_number+$matching_values_count);$i++){
+            $cards_to_copy[] = $i;
+        }
+        return $cards_to_copy;
+    }
+
+    private function getMatchesPerCards() : array
+    {
+        $matches_per_card = [];
+        foreach ($this->rows as $key => $row) {
+            // $card = $this->getCardNumb($row);
+            $winning_numbers = $this->getWinningNumbers($row);
+            $my_numbers = $this->getMyNumbers($row);
+            $matching_values_count = count(array_intersect($winning_numbers, $my_numbers));
+            $matches_per_card[] = ['card_number' => $key+1, 'matches_number' => $matching_values_count];
+        }
+        return $matches_per_card;
+    }
+
+    private function getInputCompiledContent() : array
+    {
+        $input = file_get_contents($this->input_compiled, true);
+        return array_filter(explode("\n", $input));
+    }
+
+    private function getMatchingNumberInCard(array $matches_per_card, int $card) : int
+    {
+        var_dump($matches_per_card);
+        $matches = array_map(function($item) use ($card) {
+            if($item['card_number'] == $card){
+                return $item['matches_number'];
+            }else{
+                return null;
+            }
+        }, $matches_per_card);
+
+        return $matches[0];
     }
 
 }
