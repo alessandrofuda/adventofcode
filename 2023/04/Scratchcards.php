@@ -57,18 +57,18 @@ class Scratchcards
         $matches_per_card = $this->getMatchesPerCards();
         //var_dump($matches_per_card);
 
-
-        while ($i < 10) { // todo, next untill ?????
+        $last_item = 0;
+        while ($it < 10) { // todo, next untill ????? removing...
             $input_compiled_rows = $this->getInputCompiledContent();
             // foreach ($input_compiled_rows as $key => $row) {
-            $last_item = 0;
+
             for($i=$last_item;$i<=count($input_compiled_rows);$i++) {
                 $card = $this->getCardNumb($input_compiled_rows[$i]);
                 $matches_count = $this->getMatchingNumberInCard($matches_per_card, $card);
                 $this->createCardCopies($matches_count, $card);
-
+                $last_item = $i;
             }
-            $i++;
+            $it++;
         }
         // todo ooo
 
