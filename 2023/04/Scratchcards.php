@@ -61,7 +61,6 @@ class Scratchcards
         while ($created_per_iteration > 0) {
             $input_compiled_rows = $this->getInputCompiledContent();
 
-            // var_dump('first_item: '.$first_item);
             $created = [];
             for($i=$first_item; $i<count($input_compiled_rows); $i++) {
                 $card = $this->getCardNumb($input_compiled_rows[$i]);
