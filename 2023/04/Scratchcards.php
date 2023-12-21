@@ -144,7 +144,6 @@ class Scratchcards
     {
         $matches_per_card = [];
         foreach ($this->rows as $key => $row) {
-            // $card = $this->getCardNumb($row);
             $winning_numbers = $this->getWinningNumbers($row);
             $my_numbers = $this->getMyNumbers($row);
             $matching_values_count = count(array_intersect($winning_numbers, $my_numbers));
