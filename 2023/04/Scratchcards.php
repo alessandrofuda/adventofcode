@@ -55,34 +55,28 @@ class Scratchcards
     public function run2() : int
     {
         $matches_per_card = $this->getMatchesPerCards();
-        //var_dump($matches_per_card);
 
-        $last_item = 0;
-        while ($it < 10) { // todo, next untill ????? removing...
+        $first_item = 0;
+        $cycle = 0;
+        $created_per_iteration = 1;
+
+        while ($created_per_iteration>0) {
             $input_compiled_rows = $this->getInputCompiledContent();
-            // foreach ($input_compiled_rows as $key => $row) {
 
-            for($i=$last_item;$i<=count($input_compiled_rows);$i++) {
+            // var_dump('first_item: '.$first_item);
+            $created = [];
+            for($i=$first_item; $i<count($input_compiled_rows); $i++) {
                 $card = $this->getCardNumb($input_compiled_rows[$i]);
                 $matches_count = $this->getMatchingNumberInCard($matches_per_card, $card);
-                $this->createCardCopies($matches_count, $card);
-                $last_item = $i;
+                $created[] = $this->createCardCopies($matches_count, $card);
+                $first_item = $i+1;
+
             }
-            $it++;
+            $created_per_iteration = array_sum($created);
+            $cycle++;
         }
-        // todo ooo
 
-        //var_dump($input_compiled_rows);
-        //die('aaaaaaaa'."\n");
-
-
-
-        var_dump($matches_per_card);
-
-        foreach ($this->rows as $row) {
-
-        }
-        die('ookk'."\n");
+        return count($this->getInputCompiledContent());
     }
 
     private function convertInputToArr(): array
@@ -129,7 +123,7 @@ class Scratchcards
         return $new_filename;
     }
 
-    private function createCardCopies(int $matching_values_count, int $current_card_number)
+    private function createCardCopies(int $matching_values_count, int $current_card_number) : int
     {
         $file = fopen($this->input_compiled, 'a') or die("Unable to open file!");
         $cards_to_copy = $this->cardsToCopy($current_card_number, $matching_values_count);
@@ -137,6 +131,7 @@ class Scratchcards
             fwrite($file, $this->rows[$card-1]."\n");
         }
         fclose($file);
+        return count($cards_to_copy); // copied
     }
 
     private function cardsToCopy(int $current_card_number, int $matching_values_count) : array
@@ -169,7 +164,6 @@ class Scratchcards
 
     private function getMatchingNumberInCard(array $matches_per_card, int $card) : int
     {
-        var_dump($matches_per_card);
         $matches = array_map(function($item) use ($card) {
             if($item['card_number'] == $card){
                 return $item['matches_number'];
@@ -178,7 +172,8 @@ class Scratchcards
             }
         }, $matches_per_card);
 
-        return $matches[0];
+        $matches = array_values(array_filter($matches)); // filter & reindex
+        return $matches[0] ?? 0;
     }
 
 }
