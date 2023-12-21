@@ -7,7 +7,7 @@
 // IF found it populate an array with the $current_number and break loop cycle.
 
 require_once "Scratchcards.php";
-$scratchcards = new Scratchcards('input_test.txt');
+$scratchcards = new Scratchcards('input.txt');
 
 // 1st part
 echo 'Result 1: '.$scratchcards->run()."\n";
@@ -17,5 +17,5 @@ echo 'Result 1: '.$scratchcards->run()."\n";
 // 2nd part
 echo 'Result 2: '.$scratchcards->run2()."\n";
 // TEST Result: 30
-// PROD Result:
+// PROD Result: 8570000  (take about 2 minutes of elaborations!!!)
 

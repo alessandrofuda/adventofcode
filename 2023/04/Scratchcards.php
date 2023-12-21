@@ -55,12 +55,10 @@ class Scratchcards
     public function run2() : int
     {
         $matches_per_card = $this->getMatchesPerCards();
-
         $first_item = 0;
-        $cycle = 0;
         $created_per_iteration = 1;
 
-        while ($created_per_iteration>0) {
+        while ($created_per_iteration > 0) {
             $input_compiled_rows = $this->getInputCompiledContent();
 
             // var_dump('first_item: '.$first_item);
@@ -73,7 +71,6 @@ class Scratchcards
 
             }
             $created_per_iteration = array_sum($created);
-            $cycle++;
         }
 
         return count($this->getInputCompiledContent());
@@ -85,10 +82,11 @@ class Scratchcards
         return array_filter(explode("\n", $input));
     }
 
-    private function getCardNumb(mixed $row) : int
+    private function getCardNumb(string $row) : int
     {
-        preg_match('/Card [0-9]+/', $row, $matches);
-        return (int) substr($matches[0], 5);
+        preg_match('/Card[ ]+[0-9]+/', $row, $matches);
+        $string = substr($matches[0], 5);
+        return (int) trim($string);
     }
 
     private function getWinningNumbers(string $row) : array
