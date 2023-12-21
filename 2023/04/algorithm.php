@@ -17,5 +17,5 @@ echo 'Result 1: '.$scratchcards->run()."\n";
 // 2nd part
 echo 'Result 2: '.$scratchcards->run2()."\n";
 // TEST Result: 30
-// PROD Result: 8570000  (take about 2 minutes of elaborations!!!)
+// PROD Result: 8570000  (take about 3 minutes of elaborations!!! - compiling input_compiled.txt file)
 
